@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient-success text-white text-center py-4">
+                <h3 class="mb-0"><i class="fas fa-user-plus me-2"></i>Create Your Account</h3>
+                <p class="mb-0 opacity-75">Join our community today</p>
+            </div>
+            <div class="card-body p-5">
+                {% if error %}
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>{{ error }}</div>
+                </div>
+                {% endif %}
+                
+                <form method="POST" id="registerForm" novalidate>
+                    <div class="mb-4">
+                        <label for="username" class="form-label fw-semibold">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   required minlength="3" maxlength="20"
+                                   placeholder="Choose a username">
+                        </div>
+                        <div class="form-text">3-20 characters. Letters, numbers, and underscores only.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   required placeholder="your@email.com">
+                        </div>
+                        <div class="form-text">We'll never share your email with anyone else.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   required minlength="12" placeholder="Create a strong password">
+                            <button type="button" class="btn btn-outline-secondary toggle-password" 
+                                    data-target="password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength mt-2">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar" id="passwordStrengthBar"></div>
+                            </div>
+                            <small class="text-muted" id="passwordStrengthText">Password strength</small>
+                        </div>
+                        <div class="form-text">Minimum 12 characters with mix of letters, numbers, and symbols.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="confirm_password" class="form-label fw-semibold">Confirm Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="confirm_password" 
+                                   name="confirm_password" required placeholder="Re-enter your password">
+                            <button type="button" class="btn btn-outline-secondary toggle-password" 
+                                    data-target="confirm_password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="invalid-feedback" id="confirmPasswordFeedback">
+                            Passwords do not match.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="referral_code" class="form-label fw-semibold">Referral Code (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-gift"></i></span>
+                            <input type="text" class="form-control" id="referral_code" name="referral_code" 
+                                   placeholder="Enter referral code if you have one">
+                        </div>
+                        <div class="form-text">Get bonus features when using a referral code.</div>
+                    </div>
+                    
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label small" for="terms">
+                            I agree to the <a href="#" class="text-success">Terms of Service</a> 
+                            and <a href="#" class="text-success">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success btn-lg w-100 py-2 mb-3" id="submitBtn">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </button>
+                    
+                    <div class="text-center">
+                        <p class="text-muted mb-0">Already have an account?</p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-sm mt-1">
+                            <i class="fas fa-sign-in-alt me-1"></i>Sign In
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Security Features Info -->
+        <div class="mt-4 text-center">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-shield-alt text-success me-2"></i>
+                        <small class="text-muted">Secure Registration</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-clock text-success me-2"></i>
+                        <small class="text-muted">3 Attempts per Hour</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-user-check text-success me-2"></i>
+                        <small class="text-muted">Instant Access</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            const input = document.getElementById(target);
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+    });
+    
+    // Password strength indicator
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const strengthText = document.getElementById('passwordStrengthText');
+    
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        let strength = 0;
+        
+        if (password.length >= 12) strength += 25;
+        if (/[a-z]/.test(password)) strength += 25;
+        if (/[A-Z]/.test(password)) strength += 25;
+        if (/[0-9]/.test(password)) strength += 15;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+        
+        strengthBar.style.width = strength + '%';
+        
+        if (strength < 50) {
+            strengthBar.className = 'progress-bar bg-danger';
+            strengthText.textContent = 'Weak password';
+        } else if (strength < 75) {
+            strengthBar.className = 'progress-bar bg-warning';
+            strengthText.textContent = 'Moderate password';
+        } else {
+            strengthBar.className = 'progress-bar bg-success';
+            strengthText.textContent = 'Strong password';
+        }
+    });
+    
+    // Password confirmation validation
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const confirmFeedback = document.getElementById('confirmPasswordFeedback');
+    
+    function validatePasswordMatch() {
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            confirmPasswordInput.classList.add('is-invalid');
+            confirmFeedback.style.display = 'block';
+        } else {
+            confirmPasswordInput.classList.remove('is-invalid');
+            confirmFeedback.style.display = 'none';
+        }
+    }
+    
+    passwordInput.addEventListener('input', validatePasswordMatch);
+    confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+    
+    // Form validation
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    // Real-time validation
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('blur', function() {
+            this.classList.add('validated');
+        });
+    });
+});
+</script>
+
+<style>
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: none;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.input-group-text {
+    border-right: none;
+}
+
+.form-control {
+    border-left: none;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    border-color: #28a745;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
+.password-strength {
+    margin-top: 5px;
+}
+
+.toggle-password {
+    border-left: none;
+}
+
+.toggle-password:hover {
+    background-color: #e9ecef;
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+    }
+}
+</style>
+{% endblock %}

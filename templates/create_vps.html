@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+# HELLO
+{% block title %}Create VPS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create New VPS</h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% if users and users|length > 0 %}
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label">Select User</label>
+                        <select class="form-select" id="user_id" name="user_id">
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username }} ({{ user.role }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="hostname" class="form-label">Hostname (optional)</label>
+                        <input type="text" class="form-control" id="hostname" name="hostname" placeholder="e.g., myserver" value="">
+                        <small class="text-muted">Leave empty for auto-generated hostname (fvm-XXXX)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="os_image" class="form-label">OS Image</label>
+                        <select class="form-select" id="os_image" name="os_image">
+                            {% for img in os_images %}
+                            <option value="{{ img }}" {% if img == 'ubuntu:22.04' %}selected{% endif %}>{{ img }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="memory" class="form-label">Memory (GB)</label>
+                            <input type="number" class="form-control" id="memory" name="memory" min="1" max="512" value="2" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="cpu" class="form-label">CPU Cores</label>
+                            <input type="number" class="form-control" id="cpu" name="cpu" min="1" max="32" value="1" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="disk" class="form-label">Disk (GB)</label>
+                            <input type="number" class="form-control" id="disk" name="disk" min="10" max="1000" value="20" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="custom_dockerfile" class="form-label">Custom Dockerfile (Optional)</label>
+                        <input type="file" class="form-control" id="custom_dockerfile" name="custom_dockerfile" accept=".dockerfile,.txt">
+                        <small class="text-muted">Only for Docker-based VPS (not used with LXC)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="additional_ports" class="form-label">Port Forwarding (host:container, comma separated)</label>
+                        <input type="text" class="form-control" id="additional_ports" name="additional_ports" placeholder="8080:80,443:443" value="">
+                        <small class="text-muted">Example: 8080:80 forwards host port 8080 to container port 80</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="expires_days" class="form-label">Expires Days</label>
+                            <input type="number" class="form-control" id="expires_days" name="expires_days" min="0" value="30">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="expires_hours" class="form-label">Hours</label>
+                            <input type="number" class="form-control" id="expires_hours" name="expires_hours" min="0" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="expires_minutes" class="form-label">Minutes</label>
+                            <input type="number" class="form-control" id="expires_minutes" name="expires_minutes" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="bandwidth_limit" class="form-label">Bandwidth Limit (MB, 0 = unlimited)</label>
+                        <input type="number" class="form-control" id="bandwidth_limit" name="bandwidth_limit" min="0" value="0">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="tags" class="form-label">Tags (comma separated)</label>
+                        <input type="text" class="form-control" id="tags" name="tags" placeholder="web,prod,testing">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Create VPS</button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enable/disable custom dockerfile based on OS selection
+    document.getElementById('os_image').addEventListener('change', function() {
+        // This is for Docker - we're using LXC so it's disabled anyway
+    });
+</script>
+{% endblock %}

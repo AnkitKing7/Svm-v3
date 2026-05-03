@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Files - VPS {{ vps.vps_id }}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>File Manager - VPS {{ vps.vps_id }}</h3>
+            <p>Current Path: {{ path }}</p>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('vps_file_upload', vps_id=vps.vps_id) }}" enctype="multipart/form-data" class="mb-3">
+                <input type="hidden" name="path" value="{{ path }}">
+                <input type="file" name="file" class="form-control d-inline-block w-auto">
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+            <form method="POST" action="{{ url_for('vps_mkdir', vps_id=vps.vps_id) }}" class="mb-3">
+                <input type="hidden" name="path" value="{{ path }}">
+                <input type="text" name="path" class="form-control d-inline-block w-auto" placeholder="New directory name">
+                <button type="submit" class="btn btn-primary">Create Directory</button>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Permissions</th>
+                        <th>Size</th>
+                        <th>Owner</th>
+                        <th>Group</th>
+                        <th>Modified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                    <tr>
+                        <td>
+                            {% if file.permissions.startswith('d') %}
+                            <a href="{{ url_for('vps_files', vps_id=vps.vps_id, path=path + '/' + file.name if path != '/' else '/' + file.name) }}">{{ file.name }}</a>
+                            {% else %}
+                            {{ file.name }}
+                            {% endif %}
+                        </td>
+                        <td>{{ file.permissions }}</td>
+                        <td>{{ file.size }}</td>
+                        <td>{{ file.owner }}</td>
+                        <td>{{ file.group }}</td>
+                        <td>{{ file.month }} {{ file.day }} {{ file.time }}</td>
+                        <td>
+                            {% if not file.permissions.startswith('d') %}
+                            <a href="{{ url_for('vps_file_download', vps_id=vps.vps_id, path=path + '/' + file.name if path != '/' else '/' + file.name) }}" class="btn btn-sm btn-primary">Download</a>
+                            <a href="{{ url_for('vps_file_edit', vps_id=vps.vps_id, path=path + '/' + file.name if path != '/' else '/' + file.name) }}" class="btn btn-sm btn-secondary">Edit</a>
+                            {% endif %}
+                            <button onclick="deleteFile('{{ path + '/' + file.name if path != '/' else '/' + file.name }}')" class="btn btn-sm btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('vps_details', vps_id=vps.vps_id) }}" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+</div>
+{% block scripts %}
+<script>
+function deleteFile(path) {
+    if (confirm('Delete ' + path + '?')) {
+        fetch('/vps/{{ vps.vps_id }}/files/delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'path=' + encodeURIComponent(path)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message || data.error);
+            location.reload();
+        });
+    }
+}
+</script>
+{% endblock %}

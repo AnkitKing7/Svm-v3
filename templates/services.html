@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Services - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Services for VPS {{ vps.vps_id }}</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Service Info</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for serv in services %}
+                <tr>
+                    <td>{{ serv }}</td>
+                    <td>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="service" value="{{ serv.split()[0] }}">
+                            <input type="hidden" name="action" value="start">
+                            <button type="submit" class="btn btn-sm btn-success">Start</button>
+                        </form>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="service" value="{{ serv.split()[0] }}">
+                            <input type="hidden" name="action" value="stop">
+                            <button type="submit" class="btn btn-sm btn-warning">Stop</button>
+                        </form>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="service" value="{{ serv.split()[0] }}">
+                            <input type="hidden" name="action" value="restart">
+                            <button type="submit" class="btn btn-sm btn-info">Restart</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No services</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

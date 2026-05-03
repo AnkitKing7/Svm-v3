@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+
+{% block title %}VPS {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">VPS {{ vps.vps_id }}</h4>
+                <small>Created: {{ vps.created_at }}</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Server IP</th>
+                                <td><code>{{ container_ip or server_ip }}</code></td>
+                            </tr>
+                            <tr>
+                                <th>SSH Port</th>
+                                <td><code>{{ vps.port or '22' }}</code></td>
+                            </tr>
+                            <tr>
+                                <th>SSH Command</th>
+                                <td>
+                                    <code>ssh root@{{ container_ip or server_ip }} -p {{ vps.port or '22' }}</code>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('ssh root@{{ container_ip or server_ip }} -p {{ vps.port or '22' }}')">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Username</th>
+                                <td><code>root</code></td>
+                            </tr>
+                            <tr>
+                                <th>Password</th>
+                                <td>
+                                    <code>{{ vps.root_password }}</code>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('{{ vps.root_password }}')">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Memory</th>
+                                <td>{{ vps.memory }} GB</td>
+                            </tr>
+                            <tr>
+                                <th>CPU</th>
+                                <td>{{ vps.cpu }} cores</td>
+                            </tr>
+                            <tr>
+                                <th>Disk</th>
+                                <td>{{ vps.disk }} GB</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">OS Image</th>
+                                <td>{{ vps.os_image }}</td>
+                            </tr>
+                            <tr>
+                                <th>Expires At</th>
+                                <td>
+                                    {% if vps.expires_at %}
+                                        {{ vps.expires_at[:10] }}
+                                        {% if vps.expires_at < now %}
+                                            <span class="badge bg-danger ms-2">Expired</span>
+                                        {% endif %}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Tmate Session</th>
+                                <td>
+                                    {% if vps.tmate_ssh %}
+                                        <div class="d-flex align-items-center">
+                                            <code class="text-break" style="max-width: 250px;">{{ vps.tmate_ssh }}</code>
+                                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('{{ vps.tmate_ssh }}')">
+                                                <i class="bi bi-clipboard"></i>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Not available</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Additional Ports</th>
+                                <td>{{ vps.additional_ports or 'None' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Bandwidth Limit</th>
+                                <td>{{ vps.bandwidth_limit or 0 }} MB</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if vps.status == 'running' else 'danger' if vps.status == 'stopped' else 'warning' }} fs-6 p-2">
+                                        {{ vps.status|upper }}{% if vps.suspended %} (SUSPENDED){% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <!-- Quick SSH Info -->
+                <div class="alert alert-info d-flex align-items-center mb-4">
+                    <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                    <div>
+                        <strong>SSH Connection:</strong> 
+                        <code class="ms-2">ssh root@{{ container_ip or server_ip }} -p {{ vps.port or '22' }}</code>
+                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('ssh root@{{ container_ip or server_ip }} -p {{ vps.port or '22' }}')">
+                            <i class="bi bi-clipboard"></i> Copy SSH Command
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- User Controls - Visible to everyone -->
+                <div class="text-center mb-3">
+                    <h5 class="mb-3">Controls</h5>
+                    <div class="btn-group flex-wrap" role="group">
+                        <a href="/vps/{{ vps.vps_id }}/start" class="btn btn-success {% if vps.status == 'running' %}disabled{% endif %}">
+                            <i class="bi bi-play-fill"></i> Start
+                        </a>
+                        <a href="/vps/{{ vps.vps_id }}/stop" class="btn btn-warning {% if vps.status == 'stopped' %}disabled{% endif %}">
+                            <i class="bi bi-stop-fill"></i> Stop
+                        </a>
+                        <a href="/vps/{{ vps.vps_id }}/restart" class="btn btn-info text-white">
+                            <i class="bi bi-arrow-repeat"></i> Restart
+                        </a>
+                        <a href="/vps/{{ vps.vps_id }}/console" class="btn btn-secondary">
+                            <i class="bi bi-terminal"></i> Web Console
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Admin Controls - Only visible to admins -->
+                {% if is_admin %}
+                <div class="text-center">
+                    <div class="btn-group flex-wrap" role="group">
+                        {% if vps.suspended %}
+                        <a href="/vps/{{ vps.vps_id }}/unsuspend" class="btn btn-primary">
+                            <i class="bi bi-play-circle"></i> Unsuspend
+                        </a>
+                        {% else %}
+                        <a href="/vps/{{ vps.vps_id }}/suspend" class="btn btn-warning">
+                            <i class="bi bi-pause-circle"></i> Suspend
+                        </a>
+                        {% endif %}
+                        <a href="/vps/{{ vps.vps_id }}/edit" class="btn btn-secondary">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <button onclick="confirmDelete('{{ vps.vps_id }}')" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource Usage History -->
+<div class="row mt-4">
+    <div class="col-md-10 offset-md-1">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0">Resource Usage History</h5>
+            </div>
+            <div class="card-body">
+                {% if history and history|length > 0 %}
+                <canvas id="resourceChart" height="100"></canvas>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-graph-up fs-1 text-muted"></i>
+                    <p class="text-muted mt-3 mb-0">No history data available yet.</p>
+                    <p class="text-muted small">Resource usage data will appear here once the VPS has been running for a while.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Copied to clipboard!');
+        }).catch(err => {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Copied to clipboard!');
+        });
+    }
+    
+    function confirmDelete(vpsId) {
+        if (confirm('Are you sure you want to delete this VPS? This action cannot be undone!')) {
+            fetch(`/vps/${vpsId}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        }
+    }
+    
+    // Resource chart - only initialize if there's data
+    {% if history and history|length > 0 %}
+    const history = {{ history | tojson | safe }};
+    
+    if (history && history.length > 0) {
+        const ctx = document.getElementById('resourceChart').getContext('2d');
+        
+        // Sort history by timestamp
+        history.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        
+        const labels = history.map(h => {
+            const date = new Date(h.timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        });
+        
+        const cpuData = history.map(h => h.cpu_percent || 0);
+        const memData = history.map(h => h.memory_percent || 0);
+        const diskData = history.map(h => h.disk_usage || 0);
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'CPU Usage (%)',
+                        data: cpuData,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    },
+                    {
+                        label: 'Memory Usage (%)',
+                        data: memData,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    },
+                    {
+                        label: 'Disk Usage (%)',
+                        data: diskData,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Usage (%)'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Resource Usage Over Time',
+                        font: {
+                            size: 14
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'rgba(255, 255, 255, 0.8)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+    }
+    {% endif %}
+</script>
+
+<style>
+    /* Make the table more like the picture */
+    .table-borderless th {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+        padding: 0.75rem 0.5rem !important;
+    }
+    
+    .table-borderless td {
+        font-weight: 500;
+        padding: 0.75rem 0.5rem !important;
+    }
+    
+    .btn-group .btn {
+        min-width: 100px;
+        margin: 0 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .btn-group .btn {
+            width: 100%;
+            margin: 2px 0;
+        }
+    }
+    
+    /* Style for the status badge */
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Code block styling for tmate */
+    .text-break {
+        word-break: break-all;
+        font-size: 0.85rem;
+    }
+    
+    /* Card styling */
+    .card {
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background: linear-gradient(135deg, var(--primary-color), #0a58ca);
+    }
+    
+    /* Chart container */
+    #resourceChart {
+        max-height: 300px;
+    }
+    
+    /* SSH info alert */
+    .alert-info {
+        background: rgba(13, 202, 240, 0.1);
+        border: 1px solid rgba(13, 202, 240, 0.2);
+        color: var(--bs-body-color);
+    }
+</style>
+{% endblock %}

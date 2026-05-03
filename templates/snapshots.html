@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Snapshots - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4>Snapshots for VPS {{ vps.vps_id }}</h4>
+        <form method="post" action="/vps/{{ vps.vps_id }}/snapshot/create" class="d-flex">
+            <input type="text" class="form-control me-2" name="name" placeholder="Snapshot Name">
+            <input type="text" class="form-control me-2" name="description" placeholder="Description">
+            <button type="submit" class="btn btn-primary">Create Snapshot</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Created At</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for snap in snapshots %}
+                <tr>
+                    <td>{{ snap.snapshot_name }}</td>
+                    <td>{{ snap.created_at }}</td>
+                    <td>{{ snap.description }}</td>
+                    <td>
+                        <form method="post" action="/vps/{{ vps.vps_id }}/snapshot/{{ snap.id }}/restore" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Restore?');">Restore</button>
+                        </form>
+                        <form method="post" action="/vps/{{ vps.vps_id }}/snapshot/{{ snap.id }}/delete" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">No snapshots</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

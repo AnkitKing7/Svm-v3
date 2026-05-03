@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Admin - Support Tickets</h2>
+
+    {% if tickets %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr>
+                        <td>{{ ticket.id }}</td>
+                        <td>{{ ticket.user_id }}</td>
+                        <td>{{ ticket.subject }}</td>
+                        <td>{{ ticket.description }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if ticket.status == 'open' %}bg-success
+                                {% elif ticket.status == 'closed' %}bg-danger
+                                {% else %}bg-secondary{% endif %}">
+                                {{ ticket.status }}
+                            </span>
+                        </td>
+                        <td>{{ ticket.created_at }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_ticket', ticket_id=ticket.id) }}">
+                                <select name="status" class="form-select form-select-sm">
+                                    <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
+                                    <option value="in-progress" {% if ticket.status == 'in-progress' %}selected{% endif %}>In Progress</option>
+                                    <option value="closed" {% if ticket.status == 'closed' %}selected{% endif %}>Closed</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary mt-1">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-muted">No tickets available.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Firewall - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Firewall for VPS {{ vps.vps_id }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="fw_command" placeholder="e.g., allow 80/tcp" required>
+                <button type="submit" class="btn btn-primary">Execute</button>
+            </div>
+        </form>
+        <h5>Current Status</h5>
+        <pre class="bg-light p-3 border">{{ status }}</pre>
+    </div>
+</div>
+{% endblock %}

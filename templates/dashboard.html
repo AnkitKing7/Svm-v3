@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Welcome to {{ panel_name }}</h1>
+
+<div class="card mb-4 shadow">
+    <div class="card-header">
+        <h5>Your VPS Instances</h5>
+    </div>
+    <div class="card-body">
+        {% if vps_list %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Status</th>
+                        <th>Memory</th>
+                        <th>CPU</th>
+                        <th>Disk</th>
+                        <th>Expires At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vps in vps_list %}
+                    <tr>
+                        <td>{{ vps.vps_id }}</td>
+                        <td><span class="badge bg-{{ 'success' if vps.status == 'running' else 'danger' }}">{{ vps.status | capitalize }}</span></td>
+                        <td>{{ vps.memory }} GB</td>
+                        <td>{{ vps.cpu }} cores</td>
+                        <td>{{ vps.disk }} GB</td>
+                        <td>{{ vps.expires_at }}</td>
+                        <td>
+                            <a href="/vps/{{ vps.vps_id }}" class="btn btn-sm btn-primary">Details</a>
+                            <a href="/vps/{{ vps.vps_id }}/console" class="btn btn-sm btn-secondary">Console</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No VPS instances yet. Contant Admin For Vps</a>.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h5>Notifications</h5>
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for notif in notifications %}
+        <li class="list-group-item {{ 'list-group-item-info' if not notif.read else '' }}">
+            {{ notif.message }} <small class="text-muted">({{ notif.created_at }})</small>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">No notifications</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

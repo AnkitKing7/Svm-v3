@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}VPS Created{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>VPS Created Successfully</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">VPS ID</dt>
+            <dd class="col-sm-9">{{ vps.vps_id }}</dd>
+            <dt class="col-sm-3">Server IP</dt>
+            <dd class="col-sm-9">{{ server_ip }}</dd>
+            <dt class="col-sm-3">SSH Port</dt>
+            <dd class="col-sm-9">{{ vps.port }}</dd>
+            <dt class="col-sm-3">Username</dt>
+            <dd class="col-sm-9">root</dd>
+            <dt class="col-sm-3">Password</dt>
+            <dd class="col-sm-9"><code>{{ vps.password }}</code></dd>
+            <dt class="col-sm-3">tMate Session</dt>
+            <dd class="col-sm-9">{{ vps.tmate_session or 'Not available' }}</dd>
+            <dt class="col-sm-3">Additional Ports</dt>
+            <dd class="col-sm-9">{{ vps.additional_ports or 'None' }}</dd>
+            <dt class="col-sm-3">Expires At</dt>
+            <dd class="col-sm-9">{{ vps.expires_at }}</dd>
+        </dl>
+        <a href="/dashboard" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

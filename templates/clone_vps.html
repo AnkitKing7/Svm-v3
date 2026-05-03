@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Clone VPS {{ vps.vps_id }}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>Clone VPS {{ vps.vps_id }}</h3>
+        </div>
+        <div class="card-body">
+            <p>Cloning will create a new VPS with the same configuration and data as {{ vps.vps_id }}.</p>
+            <form method="POST" action="{{ url_for('clone_vps', vps_id=vps.vps_id) }}">
+                <button type="submit" class="btn btn-primary">Clone VPS</button>
+                <a href="{{ url_for('vps_details', vps_id=vps.vps_id) }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

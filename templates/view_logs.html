@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}View Logs - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>View Logs for VPS {{ vps.vps_id }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" name="log_path" value="{{ log_path }}" placeholder="/var/log/syslog" required>
+                <input type="text" class="form-control" name="search_term" placeholder="Search term">
+                <button type="submit" class="btn btn-primary">View</button>
+            </div>
+        </form>
+        <pre class="bg-light p-3 border overflow-auto" style="max-height: 500px;">{{ logs }}</pre>
+    </div>
+</div>
+{% endblock %}

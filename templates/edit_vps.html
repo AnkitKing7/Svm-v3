@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit VPS{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Edit VPS {{ vps.vps_id }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="user_id" class="form-label">User</label>
+                <select class="form-select" id="user_id" name="user_id">
+                    {% for user in users %}
+                    <option value="{{ user.id }}" {% if user.id == vps.created_by %}selected{% endif %}>{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="memory" class="form-label">Memory (GB)</label>
+                    <input type="number" class="form-control" id="memory" name="memory" value="{{ vps.memory }}" min="1" max="512" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="cpu" class="form-label">CPU Cores</label>
+                    <input type="number" class="form-control" id="cpu" name="cpu" value="{{ vps.cpu }}" min="1" max="32" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="disk" class="form-label">Disk (GB)</label>
+                    <input type="number" class="form-control" id="disk" name="disk" value="{{ vps.disk }}" min="10" max="1000" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="os_image" class="form-label">OS Image</label>
+                <select class="form-select" id="os_image" name="os_image">
+                    {% for img in os_images %}
+                    <option value="{{ img }}" {% if img == vps.os_image %}selected{% endif %}>{{ img }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="additional_ports" class="form-label">Additional Ports</label>
+                <input type="text" class="form-control" id="additional_ports" name="additional_ports" value="{{ vps.additional_ports }}" placeholder="3000:3000,8080:80">
+            </div>
+            <div class="mb-3">
+                <label for="bandwidth_limit" class="form-label">Bandwidth Limit (MB)</label>
+                <input type="number" class="form-control" id="bandwidth_limit" name="bandwidth_limit" value="{{ vps.bandwidth_limit }}" min="0">
+            </div>
+            <div class="mb-3">
+                <label for="tags" class="form-label">Tags</label>
+                <input type="text" class="form-control" id="tags" name="tags" value="{{ vps.tags }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

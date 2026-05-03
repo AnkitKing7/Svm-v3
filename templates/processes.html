@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Processes - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Processes for VPS {{ vps.vps_id }}</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Process Info</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proc in processes %}
+                <tr>
+                    <td>{{ proc }}</td>
+                    <td>
+                        {% if proc.split()[1] | int > 1 %}
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="pid" value="{{ proc.split()[1] }}">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Kill process?');">Kill</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No processes</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

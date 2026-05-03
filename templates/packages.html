@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Packages - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Installed Packages for VPS {{ vps.vps_id }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" name="package" placeholder="Package name" required>
+                <button type="submit" name="action" value="install" class="btn btn-success">Install</button>
+                <button type="submit" name="action" value="remove" class="btn btn-danger">Remove</button>
+            </div>
+        </form>
+        <ul class="list-group">
+            {% for pkg in packages %}
+            <li class="list-group-item">{{ pkg }}</li>
+            {% else %}
+            <li class="list-group-item text-muted">No packages installed</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

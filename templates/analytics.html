@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>System Analytics</h4>
+    </div>
+    <div class="card-body">
+        <h5>CPU Usage Over Time</h5>
+        <img src="data:image/png;base64,{{ cpu_plot }}" class="img-fluid" alt="CPU Usage Chart">
+    </div>
+</div>
+{% endblock %}

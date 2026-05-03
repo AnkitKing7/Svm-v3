@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Referral{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Referral Program</h4>
+    </div>
+    <div class="card-body">
+        <p>Your Referral Code: <code>{{ code }}</code></p>
+        <p>Referred Users: {{ referred }}</p>
+        <p>Share your code to earn rewards!</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}File Manager - {{ vps.vps_id }}{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <h4>File Manager for VPS {{ vps.vps_id }} - Path: {{ path }}</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" action="/vps/{{ vps.vps_id }}/upload" enctype="multipart/form-data" class="mb-3">
+            <input type="hidden" name="path" value="{{ path }}">
+            <div class="input-group">
+                <input type="file" class="form-control" name="file">
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="/vps/{{ vps.vps_id }}/download?path={{ path }}/{{ file }}" class="btn btn-sm btn-info">Download</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No files</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

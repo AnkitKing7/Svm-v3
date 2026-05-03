@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Templates{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header">
+        <h4>Create Template</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="memory" class="form-label">Memory (GB)</label>
+                    <input type="number" class="form-control" id="memory" name="memory" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="cpu" class="form-label">CPU Cores</label>
+                    <input type="number" class="form-control" id="cpu" name="cpu" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="disk" class="form-label">Disk (GB)</label>
+                    <input type="number" class="form-control" id="disk" name="disk" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="os_image" class="form-label">OS Image</label>
+                <input type="text" class="form-control" id="os_image" name="os_image" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h4>Existing Templates</h4>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Memory</th>
+                <th>CPU</th>
+                <th>Disk</th>
+                <th>OS Image</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for temp in templates %}
+            <tr>
+                <td>{{ temp.name }}</td>
+                <td>{{ temp.memory }} GB</td>
+                <td>{{ temp.cpu }} cores</td>
+                <td>{{ temp.disk }} GB</td>
+                <td>{{ temp.os_image }}</td>
+                <td>{{ temp.description }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center">No templates</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

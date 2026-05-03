@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Delete VPS{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>Confirm Delete VPS {{ vps_id }}</h3>
+        </div>
+        <div class="card-body">
+            <p>Are you sure you want to delete this VPS? This action cannot be undone.</p>
+            <form method="POST" action="{{ url_for('delete_vps', vps_id=vps_id) }}">
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Support Center</h2>
+
+    <!-- Create Ticket Form -->
+    <form method="POST" class="card p-3 mb-4 shadow-sm">
+        <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" id="subject" name="subject" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Ticket</button>
+    </form>
+
+    <!-- Ticket List -->
+    <h4>Your Tickets</h4>
+    {% if tickets %}
+        <div class="list-group">
+            {% for ticket in tickets %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ ticket.subject }}</strong><br>
+                        <small>{{ ticket.description }}</small><br>
+                        <span class="badge bg-info">{{ ticket.status }}</span>
+                    </div>
+                    <small class="text-muted">{{ ticket.created_at }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">You have not created any tickets yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
